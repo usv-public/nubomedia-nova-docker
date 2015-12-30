@@ -16,3 +16,6 @@ master_ip = 'x.x.x.x'
 master_user = 'root'
 master_pass = None
 master_key = 'master_id_rsa'
+
+# Other variables
+floating_ip_pool = 'external'

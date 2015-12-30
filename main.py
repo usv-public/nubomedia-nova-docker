@@ -128,6 +128,18 @@ class NovaManager(object):
                 self.docker_hypervisors.append(novaManager.get_hypervisor_ip(x))
         return self.docker_hypervisors
 
+    def create_floating_ip(self):
+        unused_floating_ips = 0
+        y = None
+        floating_ips_list = self.nova.floating_ips.list()
+        for i in floating_ips_list:
+            x = getattr(i, "fixed_ip")
+            if x is None:
+                unused_floating_ips += 1
+        if unused_floating_ips == 0:
+            y = self.nova.floating_ips.create(get_env_vars()['floating_ip_pool'])
+            print y
+        return y
 
 class GlanceManager(object):
     def __init__(self, **kwargs):
@@ -155,27 +167,35 @@ class GlanceManager(object):
 
 
 if __name__ == '__main__':
+    # Connect to Keystone
     kwargs = {}
     kwargs = get_keystone_creds()
     keystoneManager = KeystoneManager(**kwargs)
 
+    # Get the list of the docker images names
     kwargs = {}
     kwargs['token'] = keystoneManager.get_token()
     kwargs['endpoint'] = get_glance_creds()
-
     glanceManager = GlanceManager(**kwargs)
     dockerimages = glanceManager.get_docker_images()
 
+    # Connect to Nova
     kwargs = get_nova_creds()
     novaManager = NovaManager(**kwargs)
-    dockerIPs = novaManager.get_docker_hypervisors_ip()
 
-    ssh = paramiko.SSHClient()
-    ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    ssh.connect(get_master_ip(), **get_master_creds())
-    for i in dockerIPs:
-        print 'Docker hypervisor IP address:', i
-        for j in dockerimages:
-            ssh_stdin, ssh_stdout, ssh_stderr = ssh.exec_command("ssh %s 'docker pull %s'" % (i, j))
-            print ssh_stdout.readlines()
-    ssh.close()
+    # Pull all docker images on all docker compute nodes, requires OpenStack admin user
+    if get_keystone_creds()['username'] == 'admin':
+        dockerIPs = novaManager.get_docker_hypervisors_ip()
+        ssh = paramiko.SSHClient()
+        ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+        print get_master_creds()
+        ssh.connect(get_master_ip(), **get_master_creds())
+        for i in dockerIPs:
+            print 'Docker hypervisor IP address:', i
+            for j in dockerimages:
+                ssh_stdin, ssh_stdout, ssh_stderr = ssh.exec_command("ssh %s 'docker pull %s'" % (i, j))
+                print ssh_stdout.readlines()
+        ssh.close()
+
+    # Create a floating IP if there is no floating IP on that tenant
+    novaManager.create_floating_ip()

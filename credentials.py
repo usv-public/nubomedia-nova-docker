@@ -71,3 +71,9 @@ def get_master_creds():
 
 def get_master_ip():
     return master_ip
+
+
+def get_env_vars():
+    d = {}
+    d['floating_ip_pool'] = floating_ip_pool
+    return d
