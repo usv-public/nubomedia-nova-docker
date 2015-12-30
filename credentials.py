@@ -17,6 +17,7 @@
 import os
 from variables import *
 
+
 def get_keystone_creds():
     d = {}
     env = os.environ.get('OS_USERNAME')

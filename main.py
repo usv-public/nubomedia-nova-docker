@@ -172,7 +172,7 @@ if __name__ == '__main__':
 
     ssh = paramiko.SSHClient()
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    ssh.connect(get_master_ip(),**get_master_creds())
+    ssh.connect(get_master_ip(), **get_master_creds())
     for i in dockerIPs:
         print 'Docker hypervisor IP address:', i
         for j in dockerimages:

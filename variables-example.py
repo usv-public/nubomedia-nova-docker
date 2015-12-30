@@ -14,5 +14,5 @@ glance_endpoint = 'http://x.x.x.x:9292'
 # Master SSH credentials
 master_ip = 'x.x.x.x'
 master_user = 'root'
-master_pass = 'pass'
+master_pass = None
 master_key = 'master_id_rsa'
