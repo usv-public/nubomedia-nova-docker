@@ -166,6 +166,27 @@ class GlanceManager(object):
         return self.dockerimages
 
 
+class OpenStackManager(object):
+    def __init__(self, **kwargs):
+        print None
+
+    def pull_docker_images(self):
+        # Pull all docker images on all docker compute nodes, requires OpenStack admin user
+        if get_keystone_creds()['username'] == 'admin':
+            dockerIPs = novaManager.get_docker_hypervisors_ip()
+            ssh = paramiko.SSHClient()
+            ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+            print get_master_creds()
+            ssh.connect(get_master_ip(), **get_master_creds())
+            for i in dockerIPs:
+                print 'Docker hypervisor IP address:', i
+                for j in dockerimages:
+                    ssh_stdin, ssh_stdout, ssh_stderr = ssh.exec_command("ssh %s 'docker pull %s'" % (i, j))
+                    print ssh_stdout.readlines()
+            ssh.close()
+        return None
+
+
 if __name__ == '__main__':
     # Connect to Keystone
     kwargs = {}
@@ -183,19 +204,10 @@ if __name__ == '__main__':
     kwargs = get_nova_creds()
     novaManager = NovaManager(**kwargs)
 
+    openStackManager = OpenStackManager()
+
     # Pull all docker images on all docker compute nodes, requires OpenStack admin user
-    if get_keystone_creds()['username'] == 'admin':
-        dockerIPs = novaManager.get_docker_hypervisors_ip()
-        ssh = paramiko.SSHClient()
-        ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        print get_master_creds()
-        ssh.connect(get_master_ip(), **get_master_creds())
-        for i in dockerIPs:
-            print 'Docker hypervisor IP address:', i
-            for j in dockerimages:
-                ssh_stdin, ssh_stdout, ssh_stderr = ssh.exec_command("ssh %s 'docker pull %s'" % (i, j))
-                print ssh_stdout.readlines()
-        ssh.close()
+    openStackManager.pull_docker_images()
 
     # Create a floating IP if there is no floating IP on that tenant
     novaManager.create_floating_ip()
