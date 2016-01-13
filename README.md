@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # nova-docker-pull-images
 Pull docker images on all compute nodes running nova-docker
 
@@ -15,3 +16,7 @@ Then run it with:
 ```
 python main.py
 ```
+=======
+# nubomedia-nova-docker
+NUBOMEDIA Nova-docker plugin for OpenStack improvements
+>>>>>>> a80ec69b5f9c6150acb79e7cb45b94f502bffd9e
