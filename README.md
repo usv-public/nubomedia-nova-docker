@@ -1,4 +1,6 @@
 # nova-docker-pull-images
+This project is part of NUBOMEDIA www.nubomedia.eu  
+   
 Pull docker images on all compute nodes running nova-docker
 
 Rename the file variables-example.py to variables.py and change the necessary values
