@@ -1,7 +1,7 @@
 # nova-docker-pull-images
 This project is part of NUBOMEDIA www.nubomedia.eu  
    
-Pull docker images on all compute nodes running nova-docker
+Nova-docker pach for pulling docker containers on compute nodes that are running docker as a hypervisor.
 
 Rename the file variables-example.py to variables.py and change the necessary values
 If you have password authentication disabled on you master then you have to provide a private key file location replacing master_id_rsa value for the master_key variable.
