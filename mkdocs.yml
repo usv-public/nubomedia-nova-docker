@@ -1,3 +1,3 @@
-site_name: Nova-docker pach for pulling docker containers on compute nodes
+site_name: Nova docker pach for pulling docker containers
 pages:
 - Home: 'index.md'
